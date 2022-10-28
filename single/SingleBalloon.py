@@ -1,13 +1,12 @@
 import requests, time
 from single.SingleBalloonDeviceSettings \
- import THINGERIO_METHOD, THINGERIO_HEADERS
+ import THINGERIO_METHOD, THINGERIO_HEADERS, SLEEP_TIME
 from single.BalloonDrift \
  import pickRandomPlaceOnEarth, makeMeteoDrift
 from single.DataMeasurment import getMeteoData
 
 #Single balloon settings
 BALLOON_ID = 0
-SLEEP_TIME = 10
 
 def run():
     """ Single balloon action """
