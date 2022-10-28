@@ -2,6 +2,9 @@ import random
 from single.BalloonData import *
 from single.DataMeasurment import getMeteoData
 
+from math import sin, cos, radians
+from single.SingleBalloonDeviceSettings import SLEEP_TIME
+
 def pickRandomPlaceOnEarth(balloon_id):
     """ Prepares an intial ballon positin and data """
     balloonData = {
@@ -28,5 +31,27 @@ def makeRandomDrift(balloonData):
      jump=random.randint(-drift,drift))
     
 
+D = 111*1000 #[m]
+A = 100
+
 def makeMeteoDrift(balloonData):
-    makeRandomDrift(balloonData)
+    """ Change position acc. to local wind """
+    #Wind angle in radians
+    theta = radians(balloonData[WIND_DIRECTION])
+    #Wind speed components
+    vLat = - balloonData[WIND_SPEED] * cos(theta) #[m/s]
+    vLon = - balloonData[WIND_SPEED] * sin(theta) #[m/s]
+    #Wind drift components
+    dLatDist = A * vLat * SLEEP_TIME #[m]
+    dLonDist = A * vLon * SLEEP_TIME #[m]
+    #Geographic coordinates change
+    d = D * cos(balloonData[LATITUDE])
+    dLatJump = dLatDist/d if d!=0 else random(-1,1)    
+    dLonJump =  dLonDist / D
+    #
+    balloonData[LATITUDE] = newLatitude(
+     current=balloonData[LATITUDE],
+     jump=dLatJump)
+    balloonData[LONGITUDE] = newLongitude(
+     current=balloonData[LONGITUDE],
+     jump=dLonJump)
